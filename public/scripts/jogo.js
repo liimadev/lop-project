@@ -1,9 +1,10 @@
-import 'https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js'
+// import 'https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js'
 import "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"
 import "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"
 import "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"
 import "https://cdn.jsdelivr.net/npm/@mediapipe/hands"
 import "https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection"
+import "https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"
 
 AFRAME.registerComponent('mycar', {
     schema: {
@@ -23,6 +24,7 @@ AFRAME.registerComponent('mycar', {
         this.velAtual = 0
         this.velocimetro = document.querySelector("#velocimetro")
         this.estadoCamera = 0
+        this.caixa = document.querySelector('#caixa-colisao')
 
         window.addEventListener('keydown', (e) => this.onKey(e, true))
         window.addEventListener('keyup', (e) => this.onKey(e, false))
@@ -43,13 +45,12 @@ AFRAME.registerComponent('mycar', {
     },
 
     tick: function () {
-        const pos = this.el.object3D.position,
-            rot = this.el.object3D.rotation,
+        const rot = this.el.object3D.rotation,
             valRot = THREE.MathUtils.degToRad(this.data.rotV) * 2
 
-        if (this.direcao.frente)
+        if (this.direcao.frente) {
             this.velAtual -= this.data.aceleracao
-        else if (this.direcao.tras)
+        } else if (this.direcao.tras)
             this.velAtual += this.data.aceleracao
         else this.velAtual *= this.data.friccao
 
@@ -61,14 +62,53 @@ AFRAME.registerComponent('mycar', {
             this.velAtual = 0
 
         if (Math.abs(this.velAtual) >= 0.1) {
-            if (this.direcao.direita) rot.y = (this.velAtual > 0) ? rot.y + valRot : rot.y - valRot
-            if (this.direcao.esquerda) rot.y = (this.velAtual > 0) ? rot.y - valRot : rot.y + valRot
+            let angulo = 0
+            if(this.direcao.direita) angulo = -valRot
+            if(this.direcao.esquerda) angulo = valRot
+
+            if(this.velAtual > 0) 
+                angulo = -angulo
+
+            if(this.el.body) {
+                let mudancaRotacao = new CANNON.Quaternion()
+                mudancaRotacao.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), angulo)
+
+                this.el.body.quaternion = this.el.body.quaternion.mult(mudancaRotacao)
+
+                this.el.object3D.quaternion.copy(this.el.body.quaternion)
+            }
         }
 
-        pos.x += Math.cos(rot.y) * this.velAtual
-        pos.z -= Math.sin(rot.y) * this.velAtual
+        console.log(`x: ${rot.x.toFixed(2)}, y: ${rot.y.toFixed(2)}, z: ${rot.z.toFixed(2)}`)
+
+        if(this.el.body) {
+            let carroDirecao = new THREE.Vector3(1, 0, 0)
+            carroDirecao.applyQuaternion(this.el.object3D.quaternion)
+
+            let velX = carroDirecao.x * this.velAtual * 60,
+                velZ = carroDirecao.z * this.velAtual * 60
+
+            const velY = this.el.body.velocity.y
+            this.el.body.velocity.set(velX, velY, velZ)
+        }
+
         this.velocimetro.setAttribute('value', `${this.velAtual > 0 ? '(R)' : ''} ${parseInt(Math.abs(this.velAtual) * 100)} km/h`)
+    
+        // if(this.verificarColisao(this.caixa)) {
+        //     console.log('Bateu')
+        // }
     }
+
+    // verificarColisao: function (obj) {
+    //     let carX = this.el.object3D.position.x,
+    //         carZ = this.el.object3D.position.z,
+    //         objX = obj.object3D.position.x,
+    //         objZ = obj.object3D.position.z
+
+    //     let distance = Math.sqrt(((carX - objX)**2) + ((carZ - objZ)**2))
+
+    //     return distance < 2
+    // }
 })
 
 AFRAME.registerComponent('gestos-input', {

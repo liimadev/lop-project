@@ -1,0 +1,24 @@
+{
+  "name": "projeto-lop-2",
+  "version": "2.0.0",
+  "description": "Projeto semestral de Lógica de Programação",
+  "homepage": "https://github.com/liimadev/lop-project#readme",
+  "bugs": {
+    "url": "https://github.com/liimadev/lop-project/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liimadev/lop-project.git"
+  },
+  "license": "ISC",
+  "author": "Kellyson Lima",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon index.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}

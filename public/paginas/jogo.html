@@ -1,7 +1,7 @@
 <html lang="pt-BR">
 <head>
     <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
-    <script type="module" src="../scripts/jogo.js"></script>
+    <script type="module" src="/js/jogo.js"></script>
     <title>Projeto LoP - 2.0</title>
 </head>
 <style>
@@ -30,17 +30,17 @@
         <canvas id="canvas"></canvas>
     </div>
     
-    <a-scene gestos-input>
+    <a-scene gestos-input physics="debug: true">
         <a-assets>
-            <img id="grama" src="../imagens/grama-02.png">
-            <img id="ceu" src="../imagens/sky.jpg">
-            <img id="roda" src="../imagens/roda.png">
-            <img id="janela" src="../imagens/gradiente-janelas.png">
+            <img id="grama" src="/assets/grama-02.png">
+            <img id="ceu" src="/assets/sky.jpg">
+            <img id="roda" src="/assets/roda.png">
+            <img id="janela" src="/assets/gradiente-janelas.png">
         </a-assets>
         <a-box
             position="0 0.75 0"
             scale="5 1 2"
-            dynamic-body
+            dynamic-body="mass: 1"
             mycar
             material="color: red;"   
             id="carro"
@@ -91,7 +91,7 @@
                 ></a-text>
             </a-entity>
         </a-box>
-        <a-box scale="4 4 4" position="-20 0 0">
+        <a-box id="caixa-colisao" scale="4 4 4" position="-20 0 0" color="orange" static-body>
         </a-box>
         <a-entity 
             geometry="primitive: plane; width: 500; height: 500"
