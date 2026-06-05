@@ -23,7 +23,7 @@ AFRAME.registerComponent('mycar', {
         this.velAtual = 0
         this.velocimetro = document.querySelector("#velocimetro")
         this.estadoCamera = 0
-        this.caixa = document.querySelector('#caixa-colisao')
+        this.caixa = null
 
         window.addEventListener('keydown', (e) => this.onKey(e, true))
         window.addEventListener('keyup', (e) => this.onKey(e, false))
@@ -93,21 +93,38 @@ AFRAME.registerComponent('mycar', {
 
         this.velocimetro.setAttribute('value', `${this.velAtual > 0 ? '(R)' : ''} ${parseInt(Math.abs(this.velAtual) * 100)} km/h`)
     
-        // if(this.verificarColisao(this.caixa)) {
-        //     console.log('Bateu')
-        // }
+
+        if(this.caixa == null) {
+            const cena = document.querySelector('#cena')
+            const valX = (Math.random() * 250) + (Math.random() * (-250)),
+                valZ = (Math.random() * 250) + (Math.random() * (-250))
+                
+            this.caixa = document.createElement('a-box')
+            this.caixa.setAttribute('scale', '1 0.5 1')
+            this.caixa.setAttribute('position', `${valX} 2 ${valZ}`)
+            cena.appendChild(this.caixa)
+        } else {
+            if(this.verificarColisao(this.caixa)) {
+                const pontuacao = document.querySelector('#pontuacao'),
+                    valPontuacao = parseInt(pontuacao.getAttribute('text').value)
+
+                pontuacao.setAttribute('text', `value: ${valPontuacao+1}`)
+                this.caixa.remove()
+                this.caixa = null
+            }
+        }
+    },
+
+    verificarColisao: function (obj) {
+        let carX = this.el.object3D.position.x,
+            carZ = this.el.object3D.position.z,
+            objX = obj.object3D.position.x,
+            objZ = obj.object3D.position.z
+
+        let distance = Math.sqrt(((carX - objX)**2) + ((carZ - objZ)**2))
+
+        return distance < 2
     }
-
-    // verificarColisao: function (obj) {
-    //     let carX = this.el.object3D.position.x,
-    //         carZ = this.el.object3D.position.z,
-    //         objX = obj.object3D.position.x,
-    //         objZ = obj.object3D.position.z
-
-    //     let distance = Math.sqrt(((carX - objX)**2) + ((carZ - objZ)**2))
-
-    //     return distance < 2
-    // }
 })
 
 AFRAME.registerComponent('gestos-input', {
@@ -128,12 +145,10 @@ AFRAME.registerComponent('gestos-input', {
             }
 
             this.detector = await handPoseDetection.createDetector(model, detectorConfig)
-            // document.getElementById('status').innerText = 'Câmera carregada com sucesso!'
 
             this.detectarMaos()
         } catch(erro) {
             console.error(erro)
-            // document.getElementById('status').innerText = "Erro: " + erro.message;
         }
     },
 

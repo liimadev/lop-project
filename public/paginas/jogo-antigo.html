@@ -1,0 +1,171 @@
+<html lang="pt-BR">
+<head>
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
+    <script>
+        AFRAME.registerComponent('mycar', {
+            schema: {
+                velMax: { type: "number", default: 0.8 },
+                aceleracao: { type: "number", default: 0.01 },
+                friccao: { type: "number", default: 0.95 },
+                rotV: { type: "number", default: 0.5 } 
+            },
+
+            init: function () {
+                this.direcao = {
+                    frente: false,
+                    tras: false,
+                    direita: false,
+                    esquerda: false,
+                }
+                this.velAtual = 0
+                this.velocimetro = document.querySelector("#velocimetro")
+                this.estadoCamera = 0
+
+                window.addEventListener('keydown', (e) => {
+                    if(e.key.toLowerCase() == 'v') {
+                        this.mudarCamera()
+                    } else this.onKey(e, true)
+                })
+                window.addEventListener('keyup', (e) => this.onKey(e, false))
+
+
+                this.camera = document.querySelector("#camera1")
+                this.cameraFixa = document.querySelector('#camera_fixa')
+                if(this.camera && this.estadoCamera == 0) {
+                    this.camera.setAttribute('position', '4 3 0')
+                    this.camera.setAttribute('rotation', '-15 90 0')
+                }
+            },
+            
+            onKey: function(e, status) {
+                const key = e.key.toLowerCase()
+                if(key == 'w') this.direcao.frente = status
+                if(key == 's') this.direcao.tras = status
+                if(key == 'd') this.direcao.direita = status
+                if(key == 'a') this.direcao.esquerda = status
+            },
+
+            mudarCamera: function() {
+                this.camera.setAttribute('camera', `active:${!(this.estadoCamera == 0)}`)
+                this.cameraFixa.setAttribute('camera', `active:${this.estadoCamera == 0}`)
+                this.estadoCamera = this.estadoCamera == 0 ? 1 : 0
+            },
+
+            tick: function() {
+                const pos = this.el.object3D.position,
+                    rot = this.el.object3D.rotation,
+                    valRot = THREE.MathUtils.degToRad(this.data.rotV) * 2
+                
+                if(this.direcao.frente) 
+                    this.velAtual -= this.data.aceleracao
+                else if(this.direcao.tras) 
+                    this.velAtual += this.data.aceleracao
+                else this.velAtual *= this.data.friccao 
+
+                
+                if(this.velAtual > this.data.velMax * 0.75) this.velAtual = this.data.velMax * 0.75
+                if(this.velAtual < -this.data.velMax) this.velAtual = -this.data.velMax
+
+                if(Math.abs(this.velAtual) < 0.01)
+                    this.velAtual = 0
+
+                if(Math.abs(this.velAtual) >= 0.1) {
+                    if(this.direcao.direita) rot.y = (this.velAtual > 0) ? rot.y + valRot : rot.y - valRot
+                    if(this.direcao.esquerda) rot.y = (this.velAtual > 0) ? rot.y - valRot : rot.y + valRot
+                }
+
+                pos.x += Math.cos(rot.y) * this.velAtual
+                pos.z -= Math.sin(rot.y) * this.velAtual
+                this.velocimetro.setAttribute('value', `${this.velAtual > 0 ? '(R)' : ''} ${parseInt(Math.abs(this.velAtual) * 100)} km/h`)
+            }
+        })
+    </script>
+    
+    <title>Projeto 01 - LoP</title>
+</head>
+
+<body>
+    <a-scene>
+        <a-assets>
+            <img id="grama" src="./assets/grama-02.png">
+            <img id="ceu" src="./assets/sky.jpg">
+            <img id="carro" src="./assets/carro.png">
+            <img id="roda" src="./assets/roda.png">
+            <img id="janela" src="./assets/gradiente-janelas.png">
+        </a-assets>
+        <a-entity id="camera_fixa" camera="active:true" position="2 5 10" wasd-controls="enabled:false" look-controls></a-entity>
+        <a-box
+            position="0 0.75 0"
+            scale="5 1 2"
+            dynamic-body
+            mycar
+            material="color: red;"   
+        >
+            <a-cylinder
+                class="roda"
+                scale="0.3 1.1 0.093"
+                position="0.3 -0.48 0"
+                rotation="0 90 90"
+                material="src: #roda"1" lo
+            ></a-cylinder>
+            <a-cylinder
+                class="roda"
+                scale="0.3 1.1 0.093"
+                position="-0.3 -0.48 0"
+                rotation="0 90 90"
+                material="src: #roda"
+            ></a-cylinder>
+            <a-box
+                scale="0.6 1 1"
+                position="0.1 1 0"
+                material="color: red;"
+            >
+                <a-box scale="0.9 0.9 0.1" position="-0.46 0 0" rotation="0 90 0" material="color: #c4c4c4; src: #janela"></a-box>
+                <a-box scale="0.7 0.4 0.1" position="0.46 0 0" rotation="0 90 0" material="color: #c4c4c4; src: #janela"></a-box>
+                <a-box scale="0.9 0.9 0.1" position="0 0 0.46" rotation="0 0 0" material="color: #c4c4c4; src: #janela"></a-box>
+                <a-box scale="0.9 0.9 0.1" position="0 0 -0.46" rotation="0 0 0" material="color: #c4c4c4; src: #janela"></a-box>
+                <a-box scale="1.05 1 0.1" position="0 0 0" rotation="0 90 0" material="color: red"></a-box>
+                <a-box scale="1.05 1.05 0.1" position="0 0.46 0" rotation="90 0 0" material="color: red"></a-box>
+            </a-box>
+            <a-box
+                scale="0.9 0.3 0.01"
+                position="-0.5 0.2 0"
+                rotation="0 90 0"
+                material="color: #fff; src: #janela"
+            >
+                <a-box scale="0.2 1 1.2" position="0.4 0 0" material="color: #FFC006"></a-box>
+                <a-box scale="0.2 1 1.2" position="-0.4 0 0" material="color: #FFC006"></a-box>
+            </a-box>
+            <a-entity id="camera1" camera="active:true" look-controls="enabled:false" wads-controls="enabled:false" position="0 2 10">
+                <a-text
+                    id="velocimetro"
+                    value="0 km/h"
+                    color="#FFF"
+                    align="center"
+                    width="1"
+                    position="0 -0.5 -1"
+                ></a-text>
+            </a-entity>
+        </a-box>
+        <a-box scale="4 4 4" position="-20 0 0">
+        </a-box>
+        <a-entity 
+            geometry="primitive: plane; width: 500; height: 500"
+            position="0 0 10" 
+            rotation="-90 0 0" 
+            material="color: #00ff00;
+                        src: #grama;
+                        repeat: 20 30;
+                        normalMap: #grama;
+                        normalTextureRepeat: 20 30;"
+            static-body
+        ></a-entity>
+        <a-sky 
+            src="#ceu"
+            radius="240"
+        ></a-sky>
+    </a-scene>
+</body>
+
+</html>
