@@ -1,4 +1,3 @@
-// import 'https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js'
 import "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"
 import "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"
 import "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"
@@ -79,9 +78,9 @@ AFRAME.registerComponent('mycar', {
             }
         }
 
-        console.log(`x: ${rot.x.toFixed(2)}, y: ${rot.y.toFixed(2)}, z: ${rot.z.toFixed(2)}`)
-
         if(this.el.body) {
+            this.el.body.angularVelocity.set(0, 0, 0)
+
             let carroDirecao = new THREE.Vector3(1, 0, 0)
             carroDirecao.applyQuaternion(this.el.object3D.quaternion)
 
@@ -119,7 +118,7 @@ AFRAME.registerComponent('gestos-input', {
         try {
             await this.configCamera()
             this.canvas = document.getElementById('canvas')
-            this.ctx = canvas.getContext('2d')
+            this.ctx = this.canvas.getContext('2d')
 
             const model = handPoseDetection.SupportedModels.MediaPipeHands
             const detectorConfig = {
@@ -185,42 +184,4 @@ AFRAME.registerComponent('gestos-input', {
         }
         requestAnimationFrame(() => this.detectarMaos())
     }
-    // init: async function () {
-    //     this.video = document.querySelector("#video")
-    //     const stream = await navigator.mediaDevices.getUserMedia({ video: true })
-    //     this.video.srcObject = stream
-    //     this.video.play()
-
-    //     console.log("Carregando o handpose...")
-    //     this.model = await handpose.load()
-    //     console.log("# Handpose carregado!")
-        
-    //     this.car = null
-    //     this.detect()
-    // },
-
-    // detect: async function () {
-    //     if(this.model && this.video.readyState >= 2 && this.car) {
-    //         const previsoes = await this.model.estimateHands(this.video)
-
-    //         const videoWidth = this.video.videoWidth;
-    //         const videoHeight = this.video.videoHeight;
-    //         if(previsoes.length > 0) {
-    //             const x = previsoes[0].annotations.palmBase[0][0],
-    //                 y = previsoes[0].annotations.palmBase[0][1]
-
-    //             const normalX = x / videoWidth,
-    //                 normalY = y / videoHeight
-
-    //             this.car.direcao.frente = normalY < 0.35
-    //             this.car.direcao.tras = normalY > 0.65
-    //             this.car.direcao.esquerda = normalX > 0.65
-    //             this.car.direcao.direita = normalX < 0.35
-
-    //         } else if(this.car) {
-    //             Object.keys(this.car.direcao).forEach(k => this.car.direcao[k] = false)
-    //         }
-    //     }
-    //     requestAnimationFrame(() => this.detect())
-    // }
 })
