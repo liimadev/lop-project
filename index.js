@@ -11,6 +11,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 app.use('/assets', express.static(path.join(__dirname, 'public/assets/')))
 app.use('/js', express.static(path.join(__dirname, 'public/scripts/')))
+app.use('/css', express.static(path.join(__dirname, 'public/css/')))
 app.use('/capas', express.static(path.join(__dirname, 'public/capas/')))
 
 app.get('/', (req, res) => {

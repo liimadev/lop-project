@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/index.css">
+    <title>LoP Project</title>
+</head>
+<body>
+    <main>
+        <div>
+            <h1>LoP Project</h1>
+            <div class="links">
+                <a href="/jogo">Jogo v2.0</a>
+                <a href="/jogo-legacy">Jogo v1.0</a>
+                <a id="creditos">Créditos</a>
+            </div>
+        </div>
+
+        <dialog id="diagCreditos">
+            <div id="credCabecalho">
+                <p id="credTitulo">Créditos</p>
+                <p id="closeModal">X</p>
+            </div>
+            <div id="credMain">
+                <p>Este jogo foi desenvolvido por <span>Kellyson Lima</span>.</p>
+                <a href="https://github.com/liimadev/lop-project-01" target="_blank" id="github">
+                    <i class="bi bi-github"></i>
+                    <p>Acessar Github</p>
+                </a>
+            </div>
+        </dialog>
+    </main>
+
+    <script>
+        const btnCreditos = document.querySelector('#creditos'),
+            diagCreditos = document.querySelector('#diagCreditos'),
+            closeModal = document.querySelector('#closeModal')
+
+        btnCreditos.addEventListener('click', () => {
+            diagCreditos.showModal()
+        })
+        closeModal.addEventListener('click', () => {
+            diagCreditos.close()
+        })
+    </script>
+</body>
+</html>
