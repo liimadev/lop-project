@@ -27,13 +27,17 @@ canvas {
     width: 95vw;
     height: 10vh;
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    flex-direction: column;
+    align-items: end;
     justify-content: right;
     margin: 5vh 2.5vw;
     font-family: "Poppins", sans-serif;
 }
-
+#pontos #pontuacao {
+    display: inherit;
+    flex-direction: row;
+    align-items: center;
+}
 #pontos p {
     color: #fff;
     margin: 0;
@@ -46,9 +50,65 @@ canvas {
     color: #FF3101;
 }
 
+#mensagens {
+    position: absolute;
+    z-index: 3000;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    font-family: "Poppins", sans-serif;
+    color: #fff;
+}
+#mensagens h2 {
+    font-size: 44px;
+    margin: 0;
+}
+#mensagens p {
+    font-size: 20px;
+    font-weight: 500;
+}
+#mensagens #icon {
+    color: #FF3101;
+    font-size: 56px;
+    margin-bottom: 5vh;
+}
+#mensagens.active {
+    display: flex;
+}
+
+a {
+    text-decoration: none;
+    width: 30%;
+    padding: 15px 10px;
+    border: 4px solid #fff;
+    border-radius: 0px 30px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 18px;
+    box-shadow: 2px 2px 0px 1px #FF3101;
+    margin-top: 5vh;
+    transition: .5s;
+    outline: none;
+}
+
+a:hover {
+    background-color: #FF3101;
+    border-color: #FF3101;
+    color: #fff;
+    box-shadow: 0px 0px 0px 0px #fff;
+}
 @media (max-width: 1024px) {
     #pontos {
         width: 90vw;
         margin-inline: auto;
+    }
+
+    a {
+        width: 70%;
     }
 }

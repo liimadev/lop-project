@@ -5,6 +5,51 @@ import "https://cdn.jsdelivr.net/npm/@mediapipe/hands"
 import "https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection"
 import "https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"
 
+const relogio = document.querySelector('#relogio')
+let minutos = 2,
+    segundos = 0,
+    continuarRodando = true
+function clock () {
+    
+    if(segundos > 0)
+        segundos--
+    else if(segundos == 0) {
+        if(minutos > 0) {
+            segundos = 59
+            minutos--
+        } else {
+            gerarPontuacao()
+            continuarRodando = false
+        }
+    }
+
+    relogio.textContent = `${minutos.toString().padStart(2, "0")}:${segundos.toString().padStart(2, "0")}`
+    if(continuarRodando) 
+        setTimeout(() => clock(), 1000)
+}
+
+async function gerarPontuacao () {
+    const carro = document.querySelector('#carro')
+    carro.setAttribute('isAtivo', 'false')
+    carro.components.mycar.direcao.frente = false
+
+    document.querySelector('#mensagens').classList.add('active')
+    document.querySelector('#mensagens #icon').classList.replace('fa-hourglass-end', 'fa-star')
+    document.querySelector('#mensagens h2').textContent = 'Parabéns!'
+    const pontos = parseInt(document.querySelector('#pontos p').textContent)
+    document.querySelector('#mensagens p').textContent = `Você conseguiu um total de ${pontos} ponto(s).`
+
+    await fetch('/api/novo-recorde', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ pontuacao: pontos })
+    })
+
+    document.querySelector('#mensagens').innerHTML += `<a href="/">Voltar ao inicio</a>`
+}
+
 AFRAME.registerComponent('mycar', {
     schema: {
         velMax: { type: "number", default: 0.8 },
@@ -33,6 +78,10 @@ AFRAME.registerComponent('mycar', {
             this.camera.setAttribute('position', '4 3 0')
             this.camera.setAttribute('rotation', '-15 90 0')
         }
+
+        document.querySelector('#carro').setAttribute('isAtivo', 'true')
+        document.querySelector('#mensagens').classList.remove('active')
+        clock()
     },
 
     onKey: function (e, status) {
@@ -47,12 +96,24 @@ AFRAME.registerComponent('mycar', {
         const rot = this.el.object3D.rotation,
             valRot = THREE.MathUtils.degToRad(this.data.rotV) * 2
 
-        if (this.direcao.frente) {
-            this.velAtual -= this.data.aceleracao
-        } else if (this.direcao.tras)
-            this.velAtual += this.data.aceleracao
-        else this.velAtual *= this.data.friccao
+        if(this.el.getAttribute('isAtivo') == 'true') {
+            if (this.direcao.frente) 
+                this.velAtual -= this.data.aceleracao
+            else if (this.direcao.tras) 
+                this.velAtual += this.data.aceleracao
+            else 
+                this.velAtual *= this.data.friccao     
+        } else {
+            this.direcao.frente = false
+            this.direcao.tras = false
+            this.velAtual = 0
 
+            if(this.el.body){
+                this.el.body.velocity.set(0, 0, 0)
+                this.el.body.angularVelocity.set(0, 0, 0)
+            }
+            return
+        }
 
         if (this.velAtual > this.data.velMax * 0.75) this.velAtual = this.data.velMax * 0.75
         if (this.velAtual < -this.data.velMax) this.velAtual = -this.data.velMax
@@ -96,8 +157,8 @@ AFRAME.registerComponent('mycar', {
 
         if(this.moeda == null) {
             const cena = document.querySelector('#cena')
-            const valX = (Math.random() * 250) + (Math.random() * (-250)),
-                valZ = (Math.random() * 250) + (Math.random() * (-250))
+            const valX = (Math.random() * 500) + (Math.random() * (-500)),
+                valZ = (Math.random() * 500) + (Math.random() * (-500))
             
             //<a-cylinder radius="0.5" height="0.1" rotation="0 0 90" position="5 2 5" material="color: gold; src: #moeda" ></a-cylinder>
             this.moeda = document.createElement('a-cylinder')
@@ -152,6 +213,9 @@ AFRAME.registerComponent('gestos-input', {
 
             this.detector = await handPoseDetection.createDetector(model, detectorConfig)
 
+            document.querySelector('#carro').setAttribute('isAtivo', 'true')
+            document.querySelector('#mensagens').classList.remove('active')
+            console.log('carregou')
             this.detectarMaos()
         } catch(erro) {
             console.error(erro)

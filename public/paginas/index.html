@@ -8,12 +8,10 @@
 </head>
 <body>
     <main>
-        <div>
+        <div id="menu">
             <h1>LoP Project</h1>
-            <div class="links">
-                <a href="/jogo">Jogo v2.0</a>
-                <a href="/jogo-legacy">Jogo v1.0</a>
-                <a id="creditos">Créditos</a>
+            <div id="username">
+                <p>Olá, usuário!</p>
             </div>
         </div>
 
@@ -30,19 +28,18 @@
                 </a>
             </div>
         </dialog>
+
+        <dialog id="diagAcesso">
+            <div id="AcsCabecalho">
+                <p id="AcsTitulo">Créditos</p>
+                <p id="AcsModal">X</p>
+            </div>
+            <div id="AcsMain">
+                <p>Este jogo foi desenvolvido por <span>Kellyson Lima</span>.</p>
+            </div>
+        </dialog>
     </main>
 
-    <script>
-        const btnCreditos = document.querySelector('#creditos'),
-            diagCreditos = document.querySelector('#diagCreditos'),
-            closeModal = document.querySelector('#closeModal')
-
-        btnCreditos.addEventListener('click', () => {
-            diagCreditos.showModal()
-        })
-        closeModal.addEventListener('click', () => {
-            diagCreditos.close()
-        })
-    </script>
+    <script type="module" src="/js/pagina-index.js"></script>
 </body>
 </html>

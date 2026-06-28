@@ -12,25 +12,35 @@
         <canvas id="canvas"></canvas>
     </div>
     <div id="pontos">
-        <i class="fa-solid fa-coins"></i>
-        <p>0</p>
+        <div id="pontuacao">
+            <i class="fa-solid fa-coins"></i>
+            <p>0</p>
+        </div>
+        <p id="relogio">02:00</p>
+    </div>
+    <div id="mensagens" class="active">
+        <i id="icon" class="fa-sharp fa-solid fa-hourglass-end"></i>
+        <h2>Carregando...</h2>
+        <p>Os componentes estão sendo carregados.</p>
     </div>
     
     <a-scene gestos-input physics="debug: false" id="cena">
         <a-assets>
             <img id="grama" src="/assets/grama-02.png">
             <img id="ceu" src="/assets/sky.jpg">
-            <img id="roda" src="/assets/roda.png">
+            <img id="roda" src="/assets/roda.png">  
             <img id="janela" src="/assets/gradiente-janelas.png">
             <img id="muro" src="/assets/muro.jpg">
             <img id="moeda" src="/assets/moeda.png">
             <audio id="somMoeda" src="/assets/moeda.mp3"></audio>
         </a-assets>
+        <a-entity id="camera5" camera="active:false" look-controls="enabled:true" wasd-controls="enabled:true;acceleration:500" position="0 50 0"></a-entity>
         <a-box
             position="0 0.75 0"
             scale="5 1 2"
             dynamic-body="mass: 1"
             mycar
+            isAtivo="false"
             material="color: red;"   
             id="carro"
         >
@@ -82,7 +92,7 @@
         </a-box>
         
         <a-entity 
-            geometry="primitive: plane; width: 500; height: 500"
+            geometry="primitive: plane; width: 1000; height: 1000"
             position="0 0 10" 
             rotation="-90 0 0" 
             material="color: #00ff00;
@@ -93,15 +103,21 @@
             static-body
         >
         </a-entity>
-        <a-box scale="2 20 500" position="250 0 10" material="color: #ccc; src: #muro; repeat: 100 3" static-body></a-box>
-        <a-box scale="2 20 500" position="-250 0 10" material="color: #ccc; src: #muro; repeat: 100 3" static-body></a-box>
-        <a-box scale="2 20 500" position="0 0 260" rotation="0 90 0" material="color: #ccc; src: #muro; repeat: 100 3" static-body></a-box>
-        <a-box scale="2 20 500" position="0 0 -240" rotation="0 90 0" material="color: #ccc; src: #muro; repeat: 100 3" static-body></a-box>
+        <a-box scale="2 20 1000" position="500 0 10" material="color: #ccc; src: #muro; repeat: 100 3" static-body></a-box>
+        <a-box scale="2 20 1000" position="-500 0 10" material="color: #ccc; src: #muro; repeat: 100 3" static-body></a-box>
+        <a-box scale="2 20 1000" position="0 0 510" rotation="0 90 0" material="color: #ccc; src: #muro; repeat: 100 3" static-body></a-box>
+        <a-box scale="2 20 1000" position="0 0 -490" rotation="0 90 0" material="color: #ccc; src: #muro; repeat: 100 3" static-body></a-box>
 
         <a-sky 
             src="#ceu"
-            radius="600"
+            radius="1100"
         ></a-sky>
+
+        <a-entity
+            gltf-model="#arvore"
+            position="0 0 0"
+            scale="2 2 2">
+        </a-entity>
     </a-scene>
 </body>
 
