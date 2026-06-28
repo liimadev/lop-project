@@ -6,7 +6,7 @@ console.log("SQLite:", sqlite3.VERSION);
 
 const sequelize = new Sequelize({
     dialect: 'sqlite',
-    storage: './src/database/banco.db'
+    storage: "/tmp/banco.db"
 })
 
 const models = { Usuario }
