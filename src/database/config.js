@@ -1,5 +1,8 @@
 import { Sequelize } from "sequelize";
 import { Usuario } from "../models/Usuario.js";
+import sqlite3 from "sqlite3";
+
+console.log("SQLite:", sqlite3.VERSION);
 
 const sequelize = new Sequelize({
     dialect: 'sqlite',
